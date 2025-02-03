@@ -479,6 +479,11 @@ const mistLayer = document.createElement('div');
             });
             document.getElementById(section).style.display = 'block';
         }
+        $(document).ready(function () {
+    $(".offer-banner").click(function () {
+        $(this).fadeOut(); // Smoothly hides the banner when clicked
+    });
+});
 
 function goToNextPage() {
     // Update this to the correct path if needed
