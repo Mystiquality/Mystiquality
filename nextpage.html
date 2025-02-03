@@ -295,6 +295,7 @@
 
     <div class="main-container">
         <div class="nav-buttons">
+            <button onclick="goBack()">Retour</button>
             <button onclick="showSection('home')">Accueil</button>
             <button onclick="showSection('services')">Services</button>
             <button onclick="showSection('contact')">Contact</button>
@@ -368,6 +369,10 @@
 
     <script>
         emailjs.init('0KS0VPFCxrTiUjWHj'); // Your public key
+        
+        function goBack() {
+    window.history.back();
+}
 
         // Create mist layer
         const mistLayer = document.createElement('div');
@@ -515,4 +520,3 @@
 
 </body>
 </html>
-    
