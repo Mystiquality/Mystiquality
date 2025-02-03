@@ -342,6 +342,7 @@
             </div>
 
             <button id="reserve-button" style="display: none;" onclick="showReservationForm()">Réserver</button>
+            <button onclick="cancelReservation()">Annuler</button>
         </div>
 
         <div id="contact" class="content">
@@ -364,12 +365,13 @@
             <input type="text" id="birth-time" placeholder="Heure de naissance">
             <input type="text" id="birth-place" placeholder="Lieu de naissance">
             <button onclick="submitReservation()">Soumettre</button>
+            <button onclick="cancelReservation()">Annuler</button>
         </div>
     </div>
 
     <script>
         emailjs.init('0KS0VPFCxrTiUjWHj'); // Your public key
-        
+
         function goBack() {
     window.history.back();
 }
@@ -515,6 +517,30 @@
     window.onload = function() {
         showSection('services'); // Set the default visible section
     };
+    
+    function cancelReservation() {
+    // Hide the reservation form
+    document.getElementById('reservation-form').style.display = 'none';
+
+    // Clear form fields
+    document.getElementById('first-name').value = '';
+    document.getElementById('last-name').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('zodiac-sign').value = '';
+    document.getElementById('date').value = '';
+    document.getElementById('time').value = '';
+    document.getElementById('birth-date').value = '';
+    document.getElementById('birth-time').value = '';
+    document.getElementById('birth-place').value = '';
+
+    // Reset service and detail selection
+    selectedService = null;
+    selectedDetail = null;
+    totalPrice = 0;
+    document.getElementById('total-price').style.display = 'none';
+    document.getElementById('total-price-amount').textContent = '0 DT';
+    document.getElementById('reserve-button').style.display = 'none';
+}
                
     </script>
 
