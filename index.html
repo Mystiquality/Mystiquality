@@ -164,6 +164,25 @@
             z-index: 1;
         }
 
+        .payment-banner {
+    position: sticky;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, rgba(33, 9, 65, 0.87), rgba(49, 31, 8, 0.87));
+    padding: 12px;
+    font-size: 16px;
+    font-weight: absolute;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(255, 0, 0, 0.5);
+    z-index: 10;
+    width: 60%;
+    max-width: 350px;
+    text-align: center;
+}
+
+
         /* Offer Special at the Bottom */
         .offer-banner {
             position: sticky;
@@ -173,13 +192,13 @@
             background: linear-gradient(90deg, rgba(93, 253, 0, 0.87), rgba(255, 251, 0, 0.877));
             padding: 12px;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: absolute;
             color: #130c1d;
             border-radius: 8px;
             box-shadow: 0px 4px 10px rgba(255, 215, 0, 0.5);
             z-index: 10;
             width: 60%; /* Allow it to fit better on mobile */
-        max-width: 350px; /* Prevent it from stretching too much */
+        max-width: 300px; /* Prevent it from stretching too much */
         }
 
         /* Reservation Form */
@@ -321,7 +340,13 @@
                 <button onclick="showReservationForm()">Confirmer la Réservation</button>
                 <button onclick="goToNextPage()">Analyse du Signe Astrologique(Click here!)(NEW!!)</button>
             </div>
+
         </div>
+        <div class="payment-banner" id="paymentBanner" onclick="hideBanner()">
+            ⚠️ On accepte uniquement les paiements par Edinar ou mandats par poste !
+        </div>
+        
+        
 
         <div class="offer-banner">
              Offre Spéciale : Remise pour les lectures de 3, 6 et 9 questions ! 
@@ -416,6 +441,10 @@ const mistLayer = document.createElement('div');
             document.querySelector('.time-picker').style.display = 'block';
             priceDetails.style.display = 'block';
         }
+        function hideBanner() {
+    document.getElementById('paymentBanner').style.display = 'none';
+}
+
 
         // Show reservation form
         function showReservationForm() {
@@ -484,8 +513,7 @@ const mistLayer = document.createElement('div');
         $(this).fadeOut(); // Smoothly hides the banner when clicked
     });
 });
-
-function goToNextPage() {
+   function goToNextPage() {
     // Update this to the correct path if needed
     window.location.href = "nextpage.html";
 }
@@ -494,4 +522,3 @@ function goToNextPage() {
 
 </body>
 </html>
-
