@@ -339,6 +339,8 @@
                 <input type="time" id="time" required>
                 <button onclick="showReservationForm()">Confirmer la Réservation</button>
                 <button onclick="goToNextPage()">Analyse du Signe Astrologique(Click here!)(NEW!!)</button>
+                <button onclick="cancelReservation()">Annuler</button>
+
             </div>
 
         </div>
@@ -360,6 +362,8 @@
             <input type="text" id="zodiac-sign" placeholder="Signe du Zodiaque" required>
             <input type="email" id="email" placeholder="Votre Email" required>
             <button onclick="submitReservation()">Envoyer</button>
+            <button onclick="cancelReservation()">Annuler</button>
+
         </div>
     </div>
 
@@ -480,6 +484,7 @@ const mistLayer = document.createElement('div');
                 
             };
 
+
            // Data to send to EmailJS
     const data = {
         service_id: 'service_9nsmsik', // Your EmailJS service ID
@@ -516,6 +521,30 @@ const mistLayer = document.createElement('div');
    function goToNextPage() {
     // Update this to the correct path if needed
     window.location.href = "nextpage.html";
+}
+
+function cancelReservation() {
+    // Hide the reservation form
+    document.getElementById('reservation-form').style.display = 'none';
+
+    // Clear form fields
+    document.getElementById('first-name').value = '';
+    document.getElementById('last-name').value = '';
+    document.getElementById('email').value = '';
+    document.getElementById('zodiac-sign').value = '';
+    document.getElementById('date').value = '';
+    document.getElementById('time').value = '';
+    document.getElementById('birth-date').value = '';
+    document.getElementById('birth-time').value = '';
+    document.getElementById('birth-place').value = '';
+
+    // Reset service and detail selection
+    selectedService = null;
+    selectedDetail = null;
+    totalPrice = 0;
+    document.getElementById('total-price').style.display = 'none';
+    document.getElementById('total-price-amount').textContent = '0 DT';
+    document.getElementById('reserve-button').style.display = 'none';
 }
 </script>
     </script>
