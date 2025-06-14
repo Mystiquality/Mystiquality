@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystiquality - Tarot & Astrology Readings</title>
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@500;700&display=swap');
+
+        :root {
+            --primary-dark: #0a0a1a;
+            --primary-light: #1a1a2e;
+            --accent-purple: #6a0dad;
+            --accent-gold: #d4af37;
+            --text-light: #f8f8f8;
+            --text-dim: rgba(248, 248, 248, 0.7);
+            --mystic-glow: rgba(106, 13, 173, 0.3);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--primary-dark);
+            color: var(--text-light);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Celestial Background */
+        .cosmic-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -3;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        }
+
+        .moon {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #f8f8f8 10%, #d4af37 60%, transparent 90%);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+            filter: blur(0.5px);
+            animation: floatMoon 8s ease-in-out infinite;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes floatMoon {
+            0%, 100% { transform: translateX(-50%) translateY(-10px); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1); }
+        }
+
+        /* Mystical Mist */
+        .mystic-mist {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, 
+                rgba(106, 13, 173, 0.1) 0%, 
+                rgba(21, 13, 51, 0.5) 70%, 
+                transparent 100%);
+            opacity: 0.5;
+            animation: mistFlow 15s linear infinite alternate;
+            z-index: -2;
+        }
+
+        @keyframes mistFlow {
+            0% { transform: translate(-5%, -5%) scale(1); opacity: 0.3; }
+            100% { transform: translate(5%, 5%) scale(1.1); opacity: 0.6; }
+        }
+        /* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-dark); /* Dark background */
+    border-left: 1px solid rgba(212, 175, 55, 0.1); /* Gold subtle border */
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--accent-purple), #825f00); /* Purple gradient */
+    border-radius: 6px;
+    border: 2px solid var(--primary-dark); /* Matches track background */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #808200, var(--accent-purple)); /* Reversed gradient on hover */
+    box-shadow: 0 0 5px rgba(216, 166, 0, 0.842); /* Glow effect */
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-purple) var(--primary-dark);
+}
+
+        /* Main Container */
+        .main-container {
+            width: 90%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 0;
+            margin: 0 auto;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-purple), #4b0082);
+            color: var(--text-light);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Cinzel Decorative', serif;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+        }
+
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(106, 13, 173, 0.5);
+        }
+
+        .nav-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-button:hover::after {
+            opacity: 1;
+        }
+
+        /* Content Sections */
+        .content {
+            display: none;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 1rem auto;
+            width: 90%;
+            max-width: 800px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .content h2 {
+            font-family: 'Cinzel Decorative', serif;
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 2rem;
+            position: relative;
+        }
+
+        .content h2 i {
+            margin-right: 10px;
+        }
+
+        .content h2::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-gold));
+            margin: 0.5rem auto;
+        }
+
+        .content p {
+            color: var(--text-dim);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .content a {
+            color: var(--accent-gold);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .content a:hover {
+            color: var(--accent-gold);
+        }
+
+        .content a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-gold);
+            transition: width 0.3s ease;
+        }
+
+        .content a:hover::after {
+            width: 100%;
+        }
+
+        /* Service Options */
+        .service-options {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .service-option {
+            padding: 2rem;
+            background: rgba(42, 42, 72, 0.7);
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            color: var(--text-light);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+        }
+
+        .service-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(106, 13, 173, 0.3);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .service-option i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+        }
+
+        /* Tarot Price List */
+        .price-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .price-option {
+            padding: 1.5rem 1rem;
+            background: rgba(42, 42, 72, 0.7);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            color: var(--text-light);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .price-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(106, 13, 173, 0.3);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .price-option.highlighted {
+            background: linear-gradient(135deg, rgba(106, 13, 173, 0.7), rgba(212, 175, 55, 0.3));
+            border-color: var(--accent-gold);
+        }
+
+        .price-option .question-text {
+            position: relative;
+            z-index: 1;
+            font-size: 1.1rem;
+        }
+
+        .price-option::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        .price-option:hover::before {
+            transform: scale(1);
+        }
+
+        .price-details {
+            text-align: center;
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            font-weight: 500;
+        }
+
+        /* Astrology Detail Options */
+        .detail-options {
+            display: none;
+            margin: 1.5rem 0;
+        }
+
+        .detail-option {
+            padding: 1.5rem 1rem;
+            background: rgba(42, 42, 72, 0.7);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.7rem 0;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .detail-option:hover {
+            background: #444444;
+            transform: translateY(-5px);
+        }
+
+        .detail-option.highlighted {
+            background: linear-gradient(135deg, rgba(0, 60, 255, 0.5), rgba(255, 94, 0, 0.5));
+            border-color: var(--accent-gold);
+        }
+
+        .detail-option .detail-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .detail-option .price-text {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            color: var(--accent-gold);
+        }
+
+        /* Total Price Display */
+        .total-price {
+            display: none;
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            text-align: center;
+        }
+
+        /* Time Picker */
+        .time-picker {
+            text-align: center;
+            margin: 2rem 0;
+            display: none;
+        }
+
+        .time-picker input {
+            margin: 0.5rem;
+            padding: 0.8rem;
+            width: 60%;
+            max-width: 300px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(26, 26, 46, 0.8);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .time-picker input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Payment Banner */
+        .payment-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(106, 13, 173, 0.9), rgba(42, 42, 72, 0.9));
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            border-radius: 30px;
+            box-shadow: 0 4px 20px rgba(106, 13, 173, 0.5);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .payment-banner:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .payment-banner i {
+            color: var(--accent-gold);
+        }
+
+        /* Reservation Form */
+        .reservation-form {
+            display: none;
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem auto;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .reservation-form h3 {
+            font-family: 'Cinzel Decorative', serif;
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .reservation-form input {
+            margin: 0.8rem auto;
+            padding: 0.8rem;
+            width: 80%;
+            max-width: 350px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(42, 42, 72, 0.7);
+            color: var(--text-light);
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .reservation-form input::placeholder {
+            color: rgba(248, 248, 248, 0.5);
+        }
+
+        .reservation-form input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple), #4b0082);
+            color: var(--text-light);
+            box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(106, 13, 173, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--accent-gold);
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-link {
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: var(--accent-gold);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .nav-buttons {
+                gap: 0.5rem;
+            }
+            
+            .nav-button {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .price-list {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            .reservation-form input {
+                width: 90%;
+            }
+
+            .service-options {
+                gap: 1rem;
+            }
+
+            .service-option {
+                padding: 1.5rem;
+                min-width: 150px;
+            }
+        }
+
+        /* Very Small Devices */
+        @media (max-width: 480px) {
+            .nav-button {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+                min-width: 100px;
+            }
+            
+            .service-option {
+                padding: 1rem;
+                min-width: 120px;
+            }
+            
+            .price-list {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            }
+            
+            .btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+                min-width: 120px;
+            }
+        }
+
+        /* Mystical Decorations */
+        .mystic-orb {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(106, 13, 173, 0.2), transparent 70%);
+            filter: blur(20px);
+            z-index: -1;
+            animation: floatOrb 15s infinite ease-in-out;
+        }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(20px, 20px); }
+            50% { transform: translate(-20px, 10px); }
+            75% { transform: translate(10px, -20px); }
+        }
+
+        .tarot-symbol {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(212, 175, 55, 0.3);
+            z-index: -1;
+            animation: floatSymbol 10s infinite ease-in-out;
+        }
+
+        @keyframes floatSymbol {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(10deg); opacity: 0.6; }
+        }
+
+        /* User Account Styles */
+        .user-account {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-purple), #4b0082);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(106, 13, 173, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .user-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(106, 13, 173, 0.5);
+        }
+
+        .account-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 1.5rem;
+            width: 250px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .account-dropdown.show {
+            display: block;
+        }
+
+        .account-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+            font-family: 'Cinzel Decorative', serif;
+        }
+
+        .account-stats {
+            margin: 1rem 0;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.8rem 0;
+            color: var(--text-light);
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+        }
+
+        .stat-value {
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(42, 42, 72, 0.7);
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-gold));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .account-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .account-btn {
+            padding: 0.6rem;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .account-btn-primary {
+            background: linear-gradient(135deg, var(--accent-purple), #4b0082);
+            color: var(--text-light);
+        }
+
+        .account-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(106, 13, 173, 0.3);
+        }
+
+        .account-btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .account-btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .promo-badge {
+            background: var(--accent-gold);
+            color: var(--primary-dark);
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="cosmic-background" id="cosmicBackground"></div>
+    <div class="mystic-mist"></div>
+    <div class="moon"></div>
+
+    <!-- User Account Icon -->
+    <div class="user-account" id="userAccount">
+        <div class="user-icon" id="userIcon">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="account-dropdown" id="accountDropdown">
+            <div class="account-header">Mon Compte</div>
+            <div class="account-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Commandes</span>
+                    <span class="stat-value" id="orderCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Points</span>
+                    <span class="stat-value" id="pointCount">0/100</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Promotion</span>
+                    <span class="stat-value" id="promoValue">0%</span>
+                </div>
+            </div>
+            <div class="account-actions">
+                <div class="account-btn account-btn-secondary" id="logoutBtn">Déconnexion</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="nav-buttons">
+            <button class="nav-button" onclick="showSection('home')">
+                <i class="fas fa-home"></i> Accueil
+            </button>
+            <button class="nav-button" onclick="showSection('services')">
+                <i class="fas fa-magic"></i> Services
+            </button>
+            <button class="nav-button" onclick="showSection('contact')">
+                <i class="fas fa-envelope"></i> Contact
+            </button>
+        </div>
+    
+        <!-- Home Section -->
+        <div id="home" class="content" style="display: block;">
+            <h2>Mystiquality</h2>
+            <p>Plongez dans les mystères du tarot et de l'astrologie avec nos lectures personnalisées. Nos experts en divination vous guident à travers les cartes et les étoiles pour révéler votre destinée.</p>
+            
+            <div class="social-links">
+                <a href="https://www.instagram.com/mystiqualityy/" target="_blank" class="social-link">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="mailto:divinekoivisions@gmail.com" class="social-link">
+                    <i class="fas fa-envelope"></i>
+                </a>
+                <a href="https://www.tiktok.com/@mystiqualityy" target="_blank" class="social-link">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+            </div>
+        </div>
+    
+        <!-- Contact Section -->
+        <div id="contact" class="content">
+            <h2>Contactez-nous</h2>
+            <p>Pour toute question ou réservation, n'hésitez pas à nous contacter :</p>
+            <p><i class="fas fa-envelope"></i> <strong>divinekoivisions@gmail.com</strong></p>
+            
+            <div class="social-links">
+                <a href="https://www.instagram.com/mystiqualityy/" target="_blank" class="social-link">
+                    <i class="fab fa-instagram"></i> Instagram
+                </a>
+                <a href="https://www.tiktok.com/@mystiqualityy" target="_blank" class="social-link">
+                    <i class="fab fa-tiktok"></i> TikTok
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Services Section -->
+        <div id="services" class="content">
+            <h2>Nos Services Divinatoires</h2>
+            <p>Choisissez le type de lecture qui vous intéresse :</p>
+            
+            <div class="service-options">
+                <div class="service-option" onclick="showTarotServices()">
+                    <i class="fas fa-star"></i>
+                    <h3>Lecture de Tarot</h3>
+                    <p>Réponses précises à vos questions</p>
+                </div>
+                <div class="service-option" onclick="showAstrologyServices()">
+                    <i class="fas fa-star"></i>
+                    <h3>Analyse Astrologique</h3>
+                    <p>Guidance basée sur votre thème natal</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarot Services Section -->
+        <div id="tarot-services" class="content">
+            <h2><i class="fas fa-star"></i> Lecture de Tarot</h2>
+            <p>Choisissez le nombre de questions pour votre lecture personnalisée :</p>
+            
+            <div class="price-list">
+                <div class="price-option" onclick="selectTarotOption(1)">
+                    <div class="question-text">1 Question</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(2)">
+                    <div class="question-text">2 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(3)">
+                    <div class="question-text">3 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(4)">
+                    <div class="question-text">4 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(5)">
+                    <div class="question-text">5 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(6)">
+                    <div class="question-text">6 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(7)">
+                    <div class="question-text">7 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(8)">
+                    <div class="question-text">8 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(9)">
+                    <div class="question-text">9 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(10)">
+                    <div class="question-text">10 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(11)">
+                    <div class="question-text">11 Questions</div>
+                </div>
+                <div class="price-option" onclick="selectTarotOption(12)">
+                    <div class="question-text">12 Questions</div>
+                </div>
+            </div>
+
+            <div id="tarot-price-details" class="price-details">
+                <p>Prix: <span id="tarot-price-amount">0</span> DT <span id="promoBadge" class="promo-badge" style="display: none;"></span></p>
+            </div>
+
+            <div class="time-picker">
+                <p>Sélectionnez votre créneau :</p>
+                <input type="date" id="tarot-date" required>
+                <input type="time" id="tarot-time" required>
+                
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="showReservationForm('tarot')">
+                        <i class="fas fa-calendar-check"></i> Réserver
+                    </button>
+                    <button class="btn btn-secondary" onclick="showSection('services')">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Astrology Services Section -->
+        <div id="astrology-services" class="content">
+            <h2><i class="fas fa-star"></i> Analyse Astrologique</h2>
+            <p>Choisissez le type d'analyse qui vous convient :</p>
+            
+            <div class="service-options">
+                <div class="service-option" onclick="selectAstrologyService('simple')">
+                    <i class="fas fa-star"></i>
+                    <h3>Analyse Simple</h3>
+                    <p>40 DT</p>
+                </div>
+                <div class="service-option" onclick="selectAstrologyService('complex')">
+                    <i class="fas fa-star"></i>
+                    <h3>Analyse Complexe</h3>
+                    <p>80 DT</p>
+                </div>
+            </div>
+
+            <div id="detail-options" class="detail-options">
+                <h3>Choisissez le niveau de détail :</h3>
+                <div class="detail-option" onclick="selectAstrologyDetail('general')">
+                    <div class="detail-text">Général</div>
+                    <div class="price-text">Prix de base</div>
+                </div>
+                <div class="detail-option" onclick="selectAstrologyDetail('detailed')">
+                    <div class="detail-text">Détaillé</div>
+                    <div class="price-text">+10 DT</div>
+                </div>
+                <div class="detail-option" onclick="selectAstrologyDetail('very-detailed')">
+                    <div class="detail-text">Très Détaillé</div>
+                    <div class="price-text">+20 DT</div>
+                </div>
+            </div>
+
+            <div id="astrology-price-details" class="total-price">
+                Prix Total: <span id="astrology-price-amount">0</span> DT <span id="promoBadge2" class="promo-badge" style="display: none;"></span>
+            </div>
+
+            <div class="time-picker">
+                <p>Sélectionnez votre créneau :</p>
+                <input type="date" id="astrology-date" required>
+                <input type="time" id="astrology-time" required>
+                
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="showReservationForm('astrology')">
+                        <i class="fas fa-calendar-check"></i> Réserver
+                    </button>
+                    <button class="btn btn-secondary" onclick="showSection('services')">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservation Form -->
+        <div id="reservation-form" class="reservation-form">
+            <h3>Confirmation de Réservation</h3>
+            <input type="text" id="first-name" placeholder="Prénom" required>
+            <input type="text" id="last-name" placeholder="Nom" required>
+            <input type="text" id="zodiac-sign" placeholder="Signe du Zodiaque" required>
+            <input type="email" id="email" placeholder="Votre Email" required>
+            <input type="text" id="birth-date" placeholder="Date de naissance (JJ/MM/AAAA)" required>
+            <input type="text" id="birth-time" placeholder="Heure de naissance" required>
+            <input type="text" id="birth-place" placeholder="Lieu de naissance" required>
+            
+            <div class="form-actions">
+                <button class="btn btn-primary" onclick="submitReservation()">
+                    <i class="fas fa-paper-plane"></i> Envoyer
+                </button>
+                <button class="btn btn-secondary" onclick="cancelReservation()">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-banner" id="paymentBanner" onclick="hideBanner()">
+        <i class="fas fa-exclamation-circle"></i>
+        Paiements acceptés : Edinar ou mandats postaux
+    </div>
+
+    <script>
+        // Initialize EmailJS
+        emailjs.init('0KS0VPFCxrTiUjWHj');
+
+        // User data
+        let userData = {
+            orders: 0,
+            points: 0,
+            promo: 0
+        };
+
+        // Load user data from localStorage
+        function loadUserData() {
+            const savedData = localStorage.getItem('mystiqualityUserData');
+            if (savedData) {
+                userData = JSON.parse(savedData);
+            }
+            updateUserStats();
+        }
+
+        // Save user data to localStorage
+        function saveUserData() {
+            localStorage.setItem('mystiqualityUserData', JSON.stringify(userData));
+        }
+
+        // Update user stats display
+        function updateUserStats() {
+            // Calculate points (reset after 100)
+            const currentPoints = userData.points % 100;
+            
+            // Calculate promotion level
+            let promo = 0;
+            if (currentPoints >= 50) promo = 5;
+            if (currentPoints >= 100) promo = 10;
+            
+            // Update displayed values
+            document.getElementById('orderCount').textContent = userData.orders;
+            document.getElementById('pointCount').textContent = `${currentPoints}/100`;
+            document.getElementById('progressFill').style.width = `${currentPoints}%`;
+            document.getElementById('promoValue').textContent = `${promo}%`;
+            
+            // Update promo badges
+            const promoBadge = document.getElementById('promoBadge');
+            const promoBadge2 = document.getElementById('promoBadge2');
+            
+            if (promo > 0) {
+                promoBadge.style.display = 'inline-block';
+                promoBadge.textContent = `-${promo}%`;
+                promoBadge2.style.display = 'inline-block';
+                promoBadge2.textContent = `-${promo}%`;
+            } else {
+                promoBadge.style.display = 'none';
+                promoBadge2.style.display = 'none';
+            }
+            
+            // Apply discount to prices if needed
+            updatePricesWithPromo(promo);
+        }
+
+        // Apply promotion to prices
+        function updatePricesWithPromo(promo) {
+            if (promo > 0) {
+                // Update tarot prices
+                const tarotPrice = document.getElementById('tarot-price-amount');
+                if (tarotPrice.textContent !== '0') {
+                    const originalPrice = parseFloat(tarotPrice.dataset.original || tarotPrice.textContent);
+                    const discountedPrice = (originalPrice * (100 - promo) / 100).toFixed(2);
+                    tarotPrice.textContent = discountedPrice;
+                    tarotPrice.dataset.original = originalPrice;
+                }
+                
+                // Update astrology prices
+                const astrologyPrice = document.getElementById('astrology-price-amount');
+                if (astrologyPrice.textContent !== '0') {
+                    const originalPrice = parseFloat(astrologyPrice.dataset.original || astrologyPrice.textContent);
+                    const discountedPrice = (originalPrice * (100 - promo) / 100).toFixed(2);
+                    astrologyPrice.textContent = discountedPrice;
+                    astrologyPrice.dataset.original = originalPrice;
+                }
+            }
+        }
+
+        // Create cosmic background with stars
+        function createCosmicBackground() {
+            const background = document.getElementById('cosmicBackground');
+            
+            // Create stars
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.opacity = Math.random();
+                star.style.setProperty('--duration', `${Math.random() * 5 + 3}s`);
+                background.appendChild(star);
+            }
+            
+            // Create mystical orbs
+            for (let i = 0; i < 3; i++) {
+                const orb = document.createElement('div');
+                orb.classList.add('mystic-orb');
+                orb.style.top = `${Math.random() * 100}%`;
+                orb.style.left = `${Math.random() * 100}%`;
+                orb.style.width = `${Math.random() * 150 + 50}px`;
+                orb.style.height = orb.style.width;
+                orb.style.animationDelay = `${Math.random() * 5}s`;
+                background.appendChild(orb);
+            }
+            
+            // Create tarot symbols
+            const symbols = ['\u2721', '\u26E9', '\u269D', '\u2727', '\u2605', '\u2739'];
+            for (let i = 0; i < 8; i++) {
+                const symbol = document.createElement('div');
+                symbol.classList.add('tarot-symbol');
+                symbol.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+                symbol.style.top = `${Math.random() * 100}%`;
+                symbol.style.left = `${Math.random() * 100}%`;
+                symbol.style.fontSize = `${Math.random() * 2 + 1.5}rem`;
+                symbol.style.animationDelay = `${Math.random() * 5}s`;
+                document.body.appendChild(symbol);
+            }
+        }
+// Firebase Configuration (same as in nextpage.html)
+const firebaseConfig = {
+            apiKey: "AIzaSyB_fguOeShe1d7rjuptgEBpit6ex3slRkE",
+            authDomain: "mystiquality-4c588.firebaseapp.com",
+            projectId: "mystiquality-4c588",
+            databaseURL: "https://mystiquality-4c588-default-rtdb.europe-west1.firebasedatabase.app",
+            storageBucket: "mystiquality-4c588.firebasestorage.app",
+            messagingSenderId: "480628060181",
+            appId: "1:480628060181:web:212a303a32a2b838001e1c",
+            measurementId: "G-6P531DQ6EE"
+        };
+// Initialize Firebase if not already initialized
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createCosmicBackground();
+            loadUserData();
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tarot-date').min = today;
+            document.getElementById('astrology-date').min = today;
+            
+            // Check URL hash to show correct section
+            const hash = window.location.hash;
+            if (hash === '#tarot') {
+                showTarotServices();
+            } else if (hash === '#astrology') {
+                showAstrologyServices();
+            } else if (hash === '#services') {
+                showSection('services');
+            }
+
+            // User account functionality
+            const userIcon = document.getElementById('userIcon');
+            const accountDropdown = document.getElementById('accountDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            // Toggle account dropdown
+            userIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                accountDropdown.classList.toggle('show');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                accountDropdown.classList.remove('show');
+            });
+            
+            // Prevent dropdown from closing when clicking inside it
+            accountDropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+          // Logout functionality
+logoutBtn.addEventListener('click', function() {
+    // Sign out from Firebase
+    firebase.auth().signOut().then(() => {
+        // Clear local storage
+        localStorage.removeItem('mystiquality_user');
+        
+        // Clear any session data
+        sessionStorage.clear();
+        
+        // Redirect to login page
+        window.location.href = 'index.html';
+    }).catch((error) => {
+        console.error('Logout error:', error);
+        // Still redirect even if there's an error
+        window.location.href = 'index.html';
+    });
+});
+        });
+
+        // Service selection variables
+        let selectedServiceType = null;
+        let selectedTarotQuestions = 0;
+        let selectedAstrologyService = null;
+        let selectedAstrologyDetail = null;
+        let totalPrice = 0;
+
+        function showSection(section) {
+            document.querySelectorAll('.content').forEach(sec => {
+                sec.style.display = 'none';
+            });
+            document.getElementById(section).style.display = 'block';
+            
+            // Smooth scroll to section
+            document.getElementById(section).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showTarotServices() {
+            showSection('tarot-services');
+            window.location.hash = 'tarot';
+        }
+
+        function showAstrologyServices() {
+            showSection('astrology-services');
+            window.location.hash = 'astrology';
+        }
+
+        function selectTarotOption(questionCount) {
+            selectedServiceType = 'tarot';
+            selectedTarotQuestions = questionCount;
+            
+            // Update highlighted option
+            document.querySelectorAll('#tarot-services .price-option').forEach(option => {
+                option.classList.remove('highlighted');
+            });
+            event.currentTarget.classList.add('highlighted');
+
+            // Calculate price
+            const priceAmount = document.getElementById('tarot-price-amount');
+            const prices = [8.5, 17, 25.5, 30, 42.5, 51, 59.5, 68, 76.5, 85, 93.5, 102];
+            const originalPrice = prices[questionCount - 1];
+            
+            // Store original price
+            priceAmount.dataset.original = originalPrice;
+            
+            // Apply current promotion if any
+            const currentPromo = parseInt(document.getElementById('promoValue').textContent) || 0;
+            const finalPrice = (originalPrice * (100 - currentPromo) / 100).toFixed(2);
+            
+            priceAmount.textContent = finalPrice;
+            
+            // Show time picker
+            document.querySelector('#tarot-services .time-picker').style.display = 'block';
+            document.getElementById('tarot-price-details').style.display = 'block';
+        }
+
+        function selectAstrologyService(service) {
+            selectedServiceType = 'astrology';
+            selectedAstrologyService = service;
+            
+            // Update highlighted option
+            document.querySelectorAll('#astrology-services .service-option').forEach(option => {
+                option.classList.remove('highlighted');
+            });
+            event.currentTarget.classList.add('highlighted');
+            
+            // Show detail options
+            document.getElementById('detail-options').style.display = 'block';
+            
+            calculateAstrologyPrice();
+        }
+
+        function selectAstrologyDetail(detail) {
+            selectedAstrologyDetail = detail;
+            
+            // Update highlighted option
+            document.querySelectorAll('#astrology-services .detail-option').forEach(option => {
+                option.classList.remove('highlighted');
+            });
+            event.currentTarget.classList.add('highlighted');
+            
+            calculateAstrologyPrice();
+        }
+
+        function calculateAstrologyPrice() {
+            if (!selectedAstrologyService) return;
+            
+            let basePrice = selectedAstrologyService === 'simple' ? 40 : 80;
+            let detailPrice = 0;
+
+            if (selectedAstrologyDetail === 'detailed') {
+                detailPrice = 10;
+            } else if (selectedAstrologyDetail === 'very-detailed') {
+                detailPrice = 20;
+            }
+
+            totalPrice = basePrice + detailPrice;
+            const priceAmount = document.getElementById('astrology-price-amount');
+            
+            // Store original price
+            priceAmount.dataset.original = totalPrice;
+            
+            // Apply current promotion if any
+            const currentPromo = parseInt(document.getElementById('promoValue').textContent) || 0;
+            const finalPrice = (totalPrice * (100 - currentPromo) / 100).toFixed(2);
+            
+            priceAmount.textContent = finalPrice;
+            document.getElementById('astrology-price-details').style.display = 'block';
+            
+            // Show time picker if both service and detail are selected
+            if (selectedAstrologyDetail) {
+                document.querySelector('#astrology-services .time-picker').style.display = 'block';
+            }
+        }
+
+        function hideBanner() {
+            document.getElementById('paymentBanner').style.display = 'none';
+        }
+
+        function showReservationForm(serviceType) {
+            let isValid = true;
+            
+            if (serviceType === 'tarot') {
+                const date = document.getElementById('tarot-date').value;
+                const time = document.getElementById('tarot-time').value;
+                
+                if (!date || !time || selectedTarotQuestions === 0) {
+                    isValid = false;
+                    alert('Veuillez sélectionner une date, une heure et le nombre de questions');
+                }
+            } else if (serviceType === 'astrology') {
+                const date = document.getElementById('astrology-date').value;
+                const time = document.getElementById('astrology-time').value;
+                
+                if (!date || !time || !selectedAstrologyService || !selectedAstrologyDetail) {
+                    isValid = false;
+                    alert('Veuillez sélectionner une date, une heure et les options de service');
+                }
+            }
+            
+            if (isValid) {
+                document.getElementById('reservation-form').style.display = 'block';
+            }
+        }
+
+        function submitReservation() {
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const zodiacSign = document.getElementById('zodiac-sign').value;
+            const email = document.getElementById('email').value;
+            const birthDate = document.getElementById('birth-date').value;
+            const birthTime = document.getElementById('birth-time').value;
+            const birthPlace = document.getElementById('birth-place').value;
+            
+            if (!firstName || !lastName || !zodiacSign || !email || !birthDate || !birthTime || !birthPlace) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            let date, time, serviceDescription;
+            
+            if (selectedServiceType === 'tarot') {
+                date = document.getElementById('tarot-date').value;
+                time = document.getElementById('tarot-time').value;
+                serviceDescription = `${selectedTarotQuestions} question(s) de tarot`;
+            } else if (selectedServiceType === 'astrology') {
+                date = document.getElementById('astrology-date').value;
+                time = document.getElementById('astrology-time').value;
+                serviceDescription = `Analyse astrologique ${selectedAstrologyService === 'simple' ? 'simple' : 'complexe'} (${selectedAstrologyDetail === 'general' ? 'général' : selectedAstrologyDetail === 'detailed' ? 'détaillé' : 'très détaillé'})`;
+            } else {
+                alert('Veuillez sélectionner un service');
+                return;
+            }
+            
+            const reservationDate = new Date(`${date}T${time}`);
+            const dayOfWeek = reservationDate.toLocaleString('fr-FR', { weekday: 'long' });
+
+            // Update user stats
+            userData.orders++;
+            userData.points += 10; // 10 points per order
+            saveUserData();
+            updateUserStats();
+
+            const templateParams = {
+                from_name: firstName,
+                last_name: lastName,
+                zodiac_sign: zodiacSign,
+                email: email,
+                date: date,
+                time: time,
+                day_of_week: dayOfWeek,
+                birth_date: birthDate,
+                birth_time: birthTime,
+                birth_place: birthPlace,
+                service_type: selectedServiceType,
+                service_description: serviceDescription,
+                total_price: selectedServiceType === 'tarot' ? 
+                    document.getElementById('tarot-price-amount').textContent + ' DT' :
+                    document.getElementById('astrology-price-amount').textContent + ' DT'
+            };
+
+            const data = {
+                service_id: 'service_9nsmsik',
+                template_id: selectedServiceType === 'tarot' ? 'template_1xm3w1l' : 'template_1wu11ea',
+                user_id: '0tyFquq25alZHFAqF',
+                template_params: templateParams
+            };
+
+            $.ajax('https://api.emailjs.com/api/v1.0/email/send', {
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json'
+            }).done(function() {
+                alert('Votre réservation a été envoyée avec succès!');
+                cancelReservation();
+                // Redirect to nextpage2.html after successful submission
+                window.location.href = 'nextpage2.html';
+            }).fail(function(error) {
+                alert('Une erreur est survenue: ' + JSON.stringify(error));
+            });
+        }
+
+        function cancelReservation() {
+            document.getElementById('reservation-form').style.display = 'none';
+            
+            // Reset form fields
+            document.getElementById('first-name').value = '';
+            document.getElementById('last-name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('zodiac-sign').value = '';
+            document.getElementById('birth-date').value = '';
+            document.getElementById('birth-time').value = '';
+            document.getElementById('birth-place').value = '';
+            
+            // Show services section
+            showSection('services');
+        }
+    </script>
+</body>
+</html>
