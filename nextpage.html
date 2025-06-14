@@ -3,546 +3,799 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Mystiquality - Astrology </title>
-    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <title>Mystiquality - Authentification</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@500;700&display=swap');
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #0a0a1a;
-            color: #f4f4f4;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
+        :root {
+            --primary-dark: #09090f;
+            --primary-light: #1a1a2e;
+            --accent-purple: #7928ca;
+            --accent-gold: #d4af37;
+            --accent-pink: #ff6b9e;
+            --text-light: #f8f8f8;
+            --text-dim: rgba(248, 248, 248, 0.7);
+            --mystic-glow: rgba(121, 40, 202, 0.4);
+            --star-glow: rgba(255, 255, 255, 0.8);
         }
 
-        /* Animated Background */
-        .background {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--primary-dark);
+            color: var(--text-light);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        /* Cosmic Background */
+        .cosmic-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            z-index: -1;
+            z-index: -3;
+            background: radial-gradient(ellipse at bottom, #0f0f1f 0%, #05050a 100%);
         }
 
-        .moon {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, #fff 20%, #ddd 50%, #888 100%);
-            border-radius: 50%;
-            box-shadow: 0px 0px 30px rgba(255, 255, 255, 0.8);
-            animation: floatMoon 6s ease-in-out infinite;
-        }
-
+        /* Animated Stars */
         .star {
             position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #fff;
+            background: white;
             border-radius: 50%;
-            opacity: 0.8;
-            animation: twinkle 2s infinite alternate;
-        }
-
-        @keyframes floatMoon {
-            0%, 100% { transform: translateX(-50%) translateY(-10px); }
-            50% { transform: translateX(-50%) translateY(10px); }
+            animation: twinkle var(--duration) infinite ease-in-out;
+            opacity: var(--opacity);
+            filter: drop-shadow(0 0 5px var(--star-glow));
         }
 
         @keyframes twinkle {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0%, 100% { opacity: 0.3; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
         }
 
-        /* Main Container */
-        .main-container {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 30px;
-            margin: 0 auto;
-            text-align: center;
-
-        }
-
-        /* Header Navigation */
-        .nav-buttons {
-            display: flex;
-            justify-content: center;
-            width: 60%;
-            margin-bottom: 20px;
-        }
-
-        button {
-            margin: 0 10px;
-            padding: 12px 25px;
-            border: none;
-            background: linear-gradient(135deg, #6a11cb, #0e1d36);
-            color: white;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-        }
-
-        /* Content Sections */
-        .content {
-            display: none;
-            background: rgba(0, 0, 0, 0.75);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px auto;
-            width: 80%;
-            max-width: 600px;
-        }
-
-        /* Services Section */
-        .price-list {
-            text-align: center;
-            font-size: 18px;
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .price-option {
-            padding: 15px;
-            background: #2e2e2e;
-            border-radius: 8px;
-            cursor: pointer;
-            position: relative;
-            font-family: 'Playfair Display', serif;
-            font-weight: bold;
-            color: white;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: 0.4s ease;
-        }
-
-        .price-option:hover {
-            background: #444444;
-            transform: scale(1.05);
-        }
-
-        .price-option.highlighted {
-            background: linear-gradient(90deg, rgba(114, 9, 9, 0.8), rgba(140, 0, 255, 0.8));
-            color: #4b0082;
-        }
-
-        .price-option.highlighted .special-text {
-            display: block;
-            color: red;
-            font-size: 14px;
-            margin-top: 5px;
-            transition: opacity 0.3s;
-            opacity: 1;
-        }
-
-        .price-option .question-text {
-            position: relative;
-            font-size: 22px;
-            z-index: 1;
-        }
-
-        /* Reservation Form */
-        .reservation-form {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 12px;
-            width: 60%;
-            max-width: 400px;
-        }
-
-        .reservation-form input {
-            margin: 10px;
-            padding: 8px;
-            width: 80%;
-            font-size: 16px;
-            border-radius: 5px;
-            border: none;
-        }
-
-        .reservation-form button {
-            padding: 12px 25px;
-            margin-top: 10px;
-            background: #2575fc;
-            color: white;
-            border-radius: 30px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        /* Floating mystical symbols */
-        .symbol {
+        /* Mystic Orb */
+        .mystic-orb {
             position: absolute;
-            font-size: 40px;
-            color: rgba(255, 215, 0, 0.7);
-            opacity: 0.6;
-            animation: floatSymbol 6s ease-in-out infinite;
-        }
-
-        @keyframes floatSymbol {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(15deg); }
-        }
-
-        /* Celestial mist animation */
-        .mist {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: radial-gradient(circle, rgba(139, 128, 70, 0.212) 0%, rgba(21, 13, 51, 0.8) 100%);
-            opacity: 0.4;
-            animation: mistFlow 10s linear infinite alternate;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, 
+                rgba(212, 175, 55, 0.1) 0%, 
+                rgba(121, 40, 202, 0.1) 50%, 
+                transparent 70%);
+            filter: blur(30px);
+            animation: pulseOrb 15s infinite alternate;
             z-index: -2;
         }
 
-        @keyframes mistFlow {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(-20px) scale(1.05); }
+        @keyframes pulseOrb {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.7; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.3; }
         }
 
-        /* New Service Styles */
-        .service-option {
-            padding: 20px;
-            background: #2e2e2e;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.4s ease;
-            margin: 10px 0;
+        /* Floating Crystals */
+        .floating-crystal {
+            position: absolute;
+            opacity: 0.7;
+            animation: floatCrystal var(--duration) infinite ease-in-out;
+            filter: drop-shadow(0 0 10px var(--accent-gold));
+            z-index: -1;
+        }
+
+        @keyframes floatCrystal {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        /* Auth Container */
+        .auth-container {
+            background: rgba(26, 26, 46, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 3rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4),
+                        0 0 30px var(--mystic-glow);
+            animation: fadeIn 1s ease-out;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, 
+                rgba(121, 40, 202, 0.1) 0%, 
+                transparent 70%);
+            animation: rotateGradient 20s linear infinite;
+            z-index: -1;
+        }
+
+        .auth-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            padding: 1px;
+            background: linear-gradient(135deg, 
+                rgba(212, 175, 55, 0.3), 
+                rgba(121, 40, 202, 0.3));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, 
+                          linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, 
+                  linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .auth-header {
             text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
         }
 
-        .service-option:hover {
-            background: #350f4b;
-            transform: scale(1.05);
+        .auth-header h2 {
+            font-family: 'Cinzel Decorative', serif;
+            color: var(--accent-gold);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            letter-spacing: 1px;
         }
 
-        .service-option.highlighted {
-            background: linear-gradient(90deg, rgba(0, 4, 255, 0.8), rgba(255, 81, 0, 0.8));
-            color: #fefcff;
+        .auth-header p {
+            color: var(--text-dim);
+            font-size: 1rem;
         }
 
-        .service-option .service-text {
-            font-size: 18px;
-            font-weight: bold;
+        .auth-header i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px var(--mystic-glow);
         }
 
-        .service-option .price-text {
-            font-size: 16px;
-            margin-top: 10px;
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
         }
 
-        .detail-option {
-            padding: 15px;
-            background: #2e2e2e;
+        .auth-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: all 0.3s ease;
+            position: relative;
+            text-align: center;
+            flex: 1;
+            z-index: 1;
+        }
+
+        .auth-tab.active {
+            color: var(--accent-gold);
+        }
+
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-gold);
+            box-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        .auth-form {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
             border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(42, 42, 72, 0.7);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            background: rgba(42, 42, 72, 0.9);
+        }
+
+        .auth-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-purple), #5a1e9e);
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.4s ease;
-            margin: 10px 0;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #5a1e9e, var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(121, 40, 202, 0.6);
+        }
+
+        .auth-btn:hover::before {
+            opacity: 1;
+        }
+
+        .auth-btn:active {
+            transform: translateY(1px);
+        }
+
+        .auth-btn i {
+            margin-right: 8px;
+        }
+
+        .auth-footer {
             text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.9rem;
         }
 
-        .detail-option:hover {
-            background: #444444;
-            transform: scale(1.05);
+        .auth-footer a {
+            color: var(--accent-gold);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
-        .detail-option.highlighted {
-            background: linear-gradient(90deg, rgba(0, 60, 255, 0.8), rgba(255, 94, 0, 0.8));
-            color: #d2c9d8;
+        .auth-footer a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-gold);
+            transition: width 0.3s ease;
         }
 
-        .detail-option .detail-text {
-            font-size: 16px;
-            font-weight: bold;
+        .auth-footer a:hover {
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
         }
 
-        .detail-option .price-text {
-            font-size: 14px;
-            margin-top: 10px;
+        .auth-footer a:hover::after {
+            width: 100%;
+        }
+
+        /* Password Toggle Styles */
+        .password-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            line-height: 1;
+            z-index: 2;
+        }
+
+        .password-toggle:hover {
+            color: var(--accent-gold);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Error/Success Messages */
+        .auth-error {
+            color: #ff6b6b;
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 1.2rem;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.2);
+        }
+
+        .auth-success {
+            color: var(--accent-gold);
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 1.2rem;
+            text-shadow: 0 0 5px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-container {
+                padding: 2rem;
+            }
+            
+            .auth-header h2 {
+                font-size: 2rem;
+            }
+            
+            .auth-tab {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 1.5rem;
+                border-radius: 12px;
+            }
+            
+            .auth-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .auth-input, .auth-btn {
+                padding: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="background">
-        <div class="moon"></div>
-    </div>
+    <div class="cosmic-background" id="cosmicBackground"></div>
+    
+    <!-- Floating Crystals -->
+    <i class="fas fa-gem floating-crystal" style="--duration: 15s; top: 20%; left: 15%; font-size: 2rem; color: var(--accent-purple);"></i>
+    <i class="fas fa-gem floating-crystal" style="--duration: 18s; top: 70%; left: 80%; font-size: 1.5rem; color: var(--accent-gold);"></i>
+    <i class="fas fa-gem floating-crystal" style="--duration: 12s; top: 80%; left: 20%; font-size: 1.8rem; color: var(--accent-pink);"></i>
+    
+    <!-- Mystic Orb -->
+    <div class="mystic-orb" style="top: 30%; left: 20%;"></div>
+    <div class="mystic-orb" style="top: 70%; left: 80%; animation-delay: 3s;"></div>
 
-    <div class="main-container">
-        <div class="nav-buttons">
-            <button onclick="goBack()">Retour</button>
-            <button onclick="showSection('home')">Accueil</button>
-            <button onclick="showSection('services')">Services</button>
-            <button onclick="showSection('contact')">Contact</button>
+    <!-- Main Auth Container -->
+    <div class="auth-container" id="auth-container">
+        <div class="auth-header">
+            <i class="fas fa-crystal"></i>
+            <h2>Mystiquality</h2>
+            <p>Connectez-vous à votre compte spirituel</p>
         </div>
 
-        <!-- Content Sections -->
-        <div id="home" class="content" style="display: none;">
-            <h2>Bienvenue à Mystiquality!!!!</h2>
-            <p>Nous sommes des jeunes professionnels en divination(tarot) , les "zodiac charts" et les "destiny matrix".</p>
-            <p> Nos réseaux sociaux:</p>
-            <p><a href="https://www.instagram.com/mystiqualityy/" target="_blank">Instagram</a> | <a href="mailto:divinekoivisions@gmail.com">Email</a> | <a href="https://www.tiktok.com/@mystiqualityy">TikTok</a></p>
+        <div class="auth-tabs">
+            <div class="auth-tab active" id="login-tab">Connexion</div>
+            <div class="auth-tab" id="signup-tab">Inscription</div>
         </div>
 
-        <div id="services" class="content">
-            <h2>Services</h2>
-            <div class="service-option" onclick="selectService('simple')">
-                <div class="service-text"> Analyse astrologique Simple </div>
-                <div class="price-text">40 DT</div>
+        <!-- Login Form -->
+        <div class="auth-form active" id="login-form">
+            <input type="email" id="login-email" placeholder="Email" class="auth-input">
+            <div class="password-container">
+                <input type="password" id="login-password" placeholder="Mot de passe" class="auth-input">
+                <button type="button" class="password-toggle">
+                    <i class="fas fa-eye"></i>
+                </button>
             </div>
-            <div class="service-option" onclick="selectService('complex')">
-                <div class="service-text">Analyse astrologique Complexe </div>
-                <div class="price-text">80 DT</div>
+            <button id="login-btn" class="auth-btn" type="button">
+                <i class="fas fa-sign-in-alt"></i> Se connecter
+            </button>
+            <div class="auth-error" id="login-error"></div>
+            <div class="auth-footer">
+                <a href="#" id="forgot-password">Mot de passe oublié?</a>
             </div>
-
-            <div id="detail-options" style="display: none;">
-                <h3>Choisissez le niveau de détail :</h3>
-                <div class="detail-option" onclick="selectDetail('general')">
-                    <div class="detail-text">Général</div>
-                    <div class="price-text">Prix de base</div>
-                </div>
-                <div class="detail-option" onclick="selectDetail('detailed')">
-                    <div class="detail-text">Détaillé</div>
-                    <div class="price-text">+10 DT</div>
-                </div>
-                <div class="detail-option" onclick="selectDetail('very-detailed')">
-                    <div class="detail-text">Très Détaillé</div>
-                    <div class="price-text">+20 DT</div>
-                </div>
-            </div>
-
-            <!-- Total Price Display -->
-            <div id="total-price" style="display: none; margin-top: 20px; font-size: 20px; font-weight: bold;">
-                Prix Total: <span id="total-price-amount">0 DT</span>
-            </div>
-
-            <button id="reserve-button" style="display: none;" onclick="showReservationForm()">Réserver</button>
-            <button onclick="cancelReservation()">Annuler</button>
         </div>
 
-        <div id="contact" class="content">
-            <h2>Contactez-nous</h2>
-            <p>Vous pouvez nous contacter via notre email ou notre Instagram:</p>
-            <p><strong>divinekoivisions@gmail.com</strong></p>
-            <p><a href="https://www.instagram.com/mystiqualityy/" target="_blank">Suivez-nous sur Instagram</a></p>
+        <!-- Signup Form -->
+        <div class="auth-form" id="signup-form">
+            <input type="text" id="signup-name" placeholder="Nom complet" class="auth-input">
+            <input type="email" id="signup-email" placeholder="Email" class="auth-input">
+            <div class="password-container">
+                <input type="password" id="signup-password" placeholder="Mot de passe" class="auth-input">
+                <button type="button" class="password-toggle">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <div class="password-container">
+                <input type="password" id="signup-confirm" placeholder="Confirmer mot de passe" class="auth-input">
+                <button type="button" class="password-toggle">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <button id="signup-btn" class="auth-btn" type="button">
+                <i class="fas fa-user-plus"></i> S'inscrire
+            </button>
+            <div class="auth-error" id="signup-error"></div>
+            <div class="auth-success" id="signup-success"></div>
         </div>
 
-        <!-- Reservation Form -->
-        <div id="reservation-form" class="reservation-form">
-            <h2>Réservation</h2>
-            <input type="text" id="first-name" placeholder="Prénom">
-            <input type="text" id="last-name" placeholder="Nom">
-            <input type="email" id="email" placeholder="Email">
-            <input type="text" id="zodiac-sign" placeholder="Signe du Zodiaque">
-            <input type="date" id="date" placeholder="Date">
-            <input type="time" id="time" placeholder="Heure">
-            <input type="text" id="birth-date" placeholder="Date de naissance">
-            <input type="text" id="birth-time" placeholder="Heure de naissance">
-            <input type="text" id="birth-place" placeholder="Lieu de naissance">
-            <button onclick="submitReservation()">Soumettre</button>
-            <button onclick="cancelReservation()">Annuler</button>
+        <!-- Password Reset Form -->
+        <div class="auth-form" id="reset-form">
+            <p>Entrez votre email pour réinitialiser votre mot de passe</p>
+            <input type="email" id="reset-email" placeholder="Email" class="auth-input">
+            <button id="reset-btn" class="auth-btn" type="button">
+                <i class="fas fa-key"></i> Réinitialiser
+            </button>
+            <div class="auth-error" id="reset-error"></div>
+            <div class="auth-success" id="reset-success"></div>
+            <div class="auth-footer">
+                <a href="#" id="back-to-login">Retour à la connexion</a>
+            </div>
         </div>
     </div>
 
     <script>
-        emailjs.init('0KS0VPFCxrTiUjWHj'); // Your public key
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_fguOeShe1d7rjuptgEBpit6ex3slRkE",
+            authDomain: "mystiquality-4c588.firebaseapp.com",
+            projectId: "mystiquality-4c588",
+            databaseURL: "https://mystiquality-4c588-default-rtdb.europe-west1.firebasedatabase.app",
+            storageBucket: "mystiquality-4c588.firebasestorage.app",
+            messagingSenderId: "480628060181",
+            appId: "1:480628060181:web:212a303a32a2b838001e1c",
+            measurementId: "G-6P531DQ6EE"
+        };
 
-        function goBack() {
-    window.history.back();
-}
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-        // Create mist layer
-        const mistLayer = document.createElement('div');
-        mistLayer.classList.add('mist');
-        document.body.appendChild(mistLayer);
+        // Use emulator if running locally
+        if (location.hostname === "localhost") {
+            auth.useEmulator("http://localhost:9099");
+        }
 
-        // Create stars in background
-        function createStars(count) {
-            const background = document.querySelector('.background');
-            for (let i = 0; i < count; i++) {
-                let star = document.createElement('div');
+        // DOM Elements
+        const loginTab = document.getElementById('login-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const resetForm = document.getElementById('reset-form');
+        const forgotPassword = document.getElementById('forgot-password');
+        const backToLogin = document.getElementById('back-to-login');
+
+        // Tab Switching
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+            resetForm.classList.remove('active');
+        });
+
+        signupTab.addEventListener('click', () => {
+            signupTab.classList.add('active');
+            loginTab.classList.remove('active');
+            signupForm.classList.add('active');
+            loginForm.classList.remove('active');
+            resetForm.classList.remove('active');
+        });
+
+        forgotPassword.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginTab.classList.remove('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.remove('active');
+            signupForm.classList.remove('active');
+            resetForm.classList.add('active');
+        });
+
+        backToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+            resetForm.classList.remove('active');
+        });
+
+        // Form Submission
+        document.getElementById('login-btn').addEventListener('click', loginUser);
+        document.getElementById('signup-btn').addEventListener('click', signupUser);
+        document.getElementById('reset-btn').addEventListener('click', resetPassword);
+
+        // Authentication Functions
+        function loginUser() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorElement = document.getElementById('login-error');
+
+            errorElement.textContent = '';
+
+            if (!email || !password) {
+                errorElement.textContent = 'Veuillez remplir tous les champs';
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Store user data in localStorage
+                    const userData = {
+                        email: userCredential.user.email,
+                        name: userCredential.user.displayName || 'Utilisateur Mystique',
+                        uid: userCredential.user.uid,
+                        orders: 0,
+                        points: 0,
+                        joinDate: new Date().getFullYear()
+                    };
+                    localStorage.setItem('mystiquality_user', JSON.stringify(userData));
+                    
+                    // Redirect to nextpage2.html
+                    window.location.href = 'nextpage2.html';
+                })
+                .catch((error) => {
+                    errorElement.textContent = getErrorMessage(error.code);
+                });
+        }
+
+        function signupUser() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm').value;
+            const errorElement = document.getElementById('signup-error');
+            const successElement = document.getElementById('signup-success');
+
+            errorElement.textContent = '';
+            successElement.textContent = '';
+
+            if (!name || !email || !password || !confirmPassword) {
+                errorElement.textContent = 'Veuillez remplir tous les champs';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Les mots de passe ne correspondent pas';
+                return;
+            }
+
+            if (password.length < 6) {
+                errorElement.textContent = 'Le mot de passe doit contenir au moins 6 caractères';
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Update user profile with display name
+                    return userCredential.user.updateProfile({
+                        displayName: name
+                    });
+                })
+                .then(() => {
+                    // Store user data in localStorage
+                    const userData = {
+                        email: email,
+                        name: name,
+                        uid: auth.currentUser.uid,
+                        orders: 0,
+                        points: 0,
+                        joinDate: new Date().getFullYear()
+                    };
+                    localStorage.setItem('mystiquality_user', JSON.stringify(userData));
+                    
+                    // Redirect to nextpage2.html
+                    window.location.href = 'nextpage2.html';
+                })
+                .catch((error) => {
+                    errorElement.textContent = getErrorMessage(error.code);
+                });
+        }
+
+        function resetPassword() {
+            const email = document.getElementById('reset-email').value;
+            const errorElement = document.getElementById('reset-error');
+            const successElement = document.getElementById('reset-success');
+
+            errorElement.textContent = '';
+            successElement.textContent = '';
+
+            if (!email) {
+                errorElement.textContent = 'Veuillez entrer votre email';
+                return;
+            }
+
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    successElement.textContent = 'Un email de réinitialisation a été envoyé';
+                })
+                .catch((error) => {
+                    errorElement.textContent = getErrorMessage(error.code);
+                });
+        }
+
+        // Clear all user data on logout
+        function clearUserData() {
+            // Clear Firebase auth
+            auth.signOut().then(() => {
+                console.log('User signed out from Firebase');
+            }).catch((error) => {
+                console.error('Error signing out:', error);
+            });
+            
+            // Clear localStorage
+            localStorage.removeItem('mystiquality_user');
+            
+            // Clear any session data
+            sessionStorage.clear();
+            
+            // Clear form fields
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('signup-name').value = '';
+            document.getElementById('signup-email').value = '';
+            document.getElementById('signup-password').value = '';
+            document.getElementById('signup-confirm').value = '';
+            document.getElementById('reset-email').value = '';
+            
+            // Reset UI state
+            loginTab.classList.add('active');
+            signupTab.classList.remove('active');
+            loginForm.classList.add('active');
+            signupForm.classList.remove('active');
+            resetForm.classList.remove('active');
+            
+            // Clear any error/success messages
+            document.getElementById('login-error').textContent = '';
+            document.getElementById('signup-error').textContent = '';
+            document.getElementById('signup-success').textContent = '';
+            document.getElementById('reset-error').textContent = '';
+            document.getElementById('reset-success').textContent = '';
+        }
+
+        // Perform complete logout
+        function performLogout() {
+            clearUserData();
+            // Redirect to login page
+            window.location.href = 'nextpage.html';
+        }
+
+        // Helper function to translate error codes
+        function getErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/invalid-email':
+                    return 'Email invalide';
+                case 'auth/user-disabled':
+                    return 'Ce compte a été désactivé';
+                case 'auth/user-not-found':
+                    return 'Aucun compte trouvé avec cet email';
+                case 'auth/wrong-password':
+                    return 'Mot de passe incorrect';
+                case 'auth/email-already-in-use':
+                    return 'Cet email est déjà utilisé';
+                case 'auth/weak-password':
+                    return 'Le mot de passe est trop faible';
+                case 'auth/operation-not-allowed':
+                    return 'Cette opération n\'est pas autorisée';
+                case 'auth/too-many-requests':
+                    return 'Trop de tentatives. Veuillez réessayer plus tard';
+                default:
+                    return 'Une erreur est survenue. Veuillez réessayer';
+            }
+        }
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Store user data in localStorage
+                const userData = {
+                    email: user.email,
+                    name: user.displayName || 'Utilisateur Mystique',
+                    uid: user.uid,
+                    orders: 0,
+                    points: 0,
+                    joinDate: new Date().getFullYear()
+                };
+                localStorage.setItem('mystiquality_user', JSON.stringify(userData));
+                
+                // Redirect to nextpage2.html
+                window.location.href = 'nextpage2.html';
+            }
+        });
+
+        // Create cosmic background
+        function createCosmicBackground() {
+            const background = document.getElementById('cosmicBackground');
+            
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
                 star.classList.add('star');
-                star.style.top = `${Math.random() * 100}vh`;
-                star.style.left = `${Math.random() * 100}vw`;
-                star.style.animationDelay = `${Math.random() * 2}s`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.opacity = Math.random();
+                star.style.animation = `twinkle ${Math.random() * 5 + 3}s infinite ease-in-out`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
                 background.appendChild(star);
             }
         }
-        createStars(50);
 
-        // Function to create floating mystical symbols
-        function createSymbols() {
-            const symbols = ['\u2721', '\u26E9', '\u269D', '\u2727']; // Star of David, Shinto Shrine, Outlined Star, Sparkle
-            const background = document.querySelector('.background');
+        document.addEventListener('DOMContentLoaded', createCosmicBackground);
 
-            for (let i = 0; i < 5; i++) {
-                let symbol = document.createElement('div');
-                symbol.classList.add('symbol');
-                symbol.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-                symbol.style.top = `${Math.random() * 80}vh`;
-                symbol.style.left = `${Math.random() * 90}vw`;
-                symbol.style.animationDelay = `${Math.random() * 3}s`;
-                background.appendChild(symbol);
-            }
-        }
-
-        createSymbols();
-
-        let selectedService = null;
-        let selectedDetail = null;
-        let totalPrice = 0;
-
-
-        function selectService(service) {
-            selectedService = service;
-            document.querySelectorAll('.service-option').forEach(option => option.classList.remove('highlighted'));
-            document.querySelector(`.service-option[onclick="selectService('${service}')"]`).classList.add('highlighted');
-            document.getElementById('detail-options').style.display = 'block';
-            document.getElementById('reserve-button').style.display = 'block';
-            calculateTotalPrice();
-        }
-
-        function selectDetail(detail) {
-            selectedDetail = detail;
-            document.querySelectorAll('.detail-option').forEach(option => option.classList.remove('highlighted'));
-            document.querySelector(`.detail-option[onclick="selectDetail('${detail}')"]`).classList.add('highlighted');
-            calculateTotalPrice();
-        }
-
-        function calculateTotalPrice() {
-            let basePrice = selectedService === 'simple' ? 40 : 80;
-            let detailPrice = 0;
-
-            if (selectedDetail === 'detailed') {
-                detailPrice = 10;
-            } else if (selectedDetail === 'very-detailed') {
-                detailPrice = 20;
-            }
-
-            totalPrice = basePrice + detailPrice;
-            document.getElementById('total-price-amount').textContent = `${totalPrice} DT`;
-            document.getElementById('total-price').style.display = 'block';
-        }
-
-
-        function showReservationForm() {
-            document.getElementById('reservation-form').style.display = 'block';
-        }
-
-        function submitReservation() {
-            const firstName = document.getElementById('first-name').value;
-            const lastName = document.getElementById('last-name').value;
-            const zodiacSign = document.getElementById('zodiac-sign').value;
-            const email = document.getElementById('email').value;
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-            const birthDate = document.getElementById('birth-date').value;
-            const birthTime = document.getElementById('birth-time').value;
-            const birthPlace = document.getElementById('birth-place').value;
-
-
-            const reservationDate = new Date(`${date}T${time}`);
-            const dayOfWeek = reservationDate.toLocaleString('fr-FR', { weekday: 'long' });
-
-            const templateParams = {
-                from_name: firstName,
-                last_name: lastName,
-                zodiac_sign: zodiacSign,
-                email: email,
-                date: date,
-                time: time,
-                day_of_week: dayOfWeek,
-                birth_date: birthDate,
-                birth_time: birthTime,
-                birth_place: birthPlace,
-                service_type: selectedService,
-                detail_level: selectedDetail,
-                total_price: totalPrice // Include the total price in the email
-
-            };
-
-            const data = {
-                service_id: 'service_9nsmsik', // Your EmailJS service ID
-                template_id: 'template_1wu11ea', // Your EmailJS template ID
-                user_id: '0tyFquq25alZHFAqF', // Your EmailJS public key
-                template_params: templateParams
-            };
-
-   // Send the email using EmailJS API
-   $.ajax('https://api.emailjs.com/api/v1.0/email/send', {
-        type: 'POST',
-        data: JSON.stringify(data),
-        contentType: 'application/json'
-    }).done(function() {
-        alert('Your mail has been sent!');
-    }).fail(function(error) {
-        alert('Oops... ' + JSON.stringify(error));
-    });
-}
-
-        // Show sections based on button clicks
-        function showSection(section) {
-            const sections = document.querySelectorAll('.content');
-            sections.forEach(sec => {
-                sec.style.display = 'none';
+        // Password toggle functionality
+        document.querySelectorAll('.password-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('i');
+                
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
             });
-            document.getElementById(section).style.display = 'block';
-        }
-        // Automatically show the 'services' section when the page loads
-    window.onload = function() {
-        showSection('services'); // Set the default visible section
-    };
-    
-    function cancelReservation() {
-    // Hide the reservation form
-    document.getElementById('reservation-form').style.display = 'none';
-
-    // Clear form fields
-    document.getElementById('first-name').value = '';
-    document.getElementById('last-name').value = '';
-    document.getElementById('email').value = '';
-    document.getElementById('zodiac-sign').value = '';
-    document.getElementById('date').value = '';
-    document.getElementById('time').value = '';
-    document.getElementById('birth-date').value = '';
-    document.getElementById('birth-time').value = '';
-    document.getElementById('birth-place').value = '';
-
-    // Reset service and detail selection
-    selectedService = null;
-    selectedDetail = null;
-    totalPrice = 0;
-    document.getElementById('total-price').style.display = 'none';
-    document.getElementById('total-price-amount').textContent = '0 DT';
-    document.getElementById('reserve-button').style.display = 'none';
-}
-               
+        });
     </script>
-
 </body>
 </html>
