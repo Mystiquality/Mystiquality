@@ -1444,6 +1444,7 @@ logoutBtn.addEventListener('click', function() {
                 birth_place: birthPlace,
                 service_type: selectedServiceType,
                 service_description: serviceDescription,
+                questionCount: selectedServiceType === 'tarot' ? selectedTarotQuestions.toString() : 'N/A',
                 total_price: selectedServiceType === 'tarot' ? 
                     document.getElementById('tarot-price-amount').textContent + ' DT' :
                     document.getElementById('astrology-price-amount').textContent + ' DT'
